@@ -1,0 +1,26 @@
+body, html{
+    height: 100%;
+}
+.bg{
+    background-image: url("https://images.unsplash.com/photo-1513269798455-b0c23c9e4d5b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1240&q=80");
+    height: 100%;
+    /* width: 1000px; */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover; 
+}
+#menu{
+    float: left;
+    padding: 100px;
+}
+.jumbotron{
+    background-image: url("https://hutchingspianos.com.au/wp-content/uploads/2017/06/Piano-Keys-Background.png");
+    background-position: bottom;
+    background-size: cover;
+}
+.jumbotron h1{
+    color: white;
+}
+.jumbotron p{
+    color: white;
+}
