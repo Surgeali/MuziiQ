@@ -33,3 +33,6 @@ Elevator Pitch: Live streamed musical game where users can make music together.
 
 - need icons for instruments
 - user icons or profile pictures
+
+### The mock up:
+- https://www.figma.com/file/VzsnF34y8uPmaaImVXkX6j/Untitled?node-id=0%3A1
