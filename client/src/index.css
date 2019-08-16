@@ -9,10 +9,7 @@ body, html{
   background-position: center;
   background-size: cover; 
 }
-#menu{
-  text-align-last: right;
-  padding-right: 100px;
-}
+
 .jumbotron{
   /* background-image: url("https://hutchingspianos.com.au/wp-content/uploads/2017/06/Piano-Keys-Background.png");
   background-position: bottom; */
