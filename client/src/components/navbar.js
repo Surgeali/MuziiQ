@@ -44,7 +44,7 @@ class NavBar extends Component {
                         <p>BPM</p>
                         <p>0:00</p>
 
-                        <button id="record">Record</button>
+                        <button id="record" onClick={this.props.recordPressed}>Record</button>
                         <button id="start">Play Button</button>
                         <button id="stop">Stop</button>
                         <button>Save</button>
