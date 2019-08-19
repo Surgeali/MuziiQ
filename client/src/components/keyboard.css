@@ -5,12 +5,11 @@
     height: 350px;
     left: 306px;
     top: 545px;
-    z-index: -5;
+    /* z-index: 0; */
     background: #000000;
   }
   
-  
-  
+
   #keyboard {
     z-index: 1;
   }
@@ -79,7 +78,7 @@
     left: 944px;
   }
   
-  p {
+  .place {
     position: absolute;
     width: 106px;
     height: 49px;

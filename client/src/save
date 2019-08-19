@@ -1,0 +1,42 @@
+      <div className='App'>
+        <div style={this.styles.jumbotron}>
+          <div className="container">
+            <h1 style={{ color: 'white' }}>Markable Music</h1>
+            <p style={{ color: 'white' }}>Make it sound remarkable</p>
+          </div>
+          <div style={this.styles.menu} id="menu">
+
+            <select>
+              <option value="keys">Keys</option>
+              <option value="drums">Drums</option>
+            </select>
+
+            <select>
+              <option value="c">C</option>
+              <option value="c#">C#</option>
+              <option value="d">D</option>
+              <option value="d#">D#</option>
+              <option value="e">E</option>
+              <option value="f">F</option>
+              <option value="f#">F#</option>
+              <option value="g">G</option>
+              <option value="g#">G#</option>
+              <option value="a">A</option>
+              <option value="a#">A#</option>
+              <option value="b">B </option>
+            </select>
+
+            <select>
+              <option value="major">Major</option>
+              <option value="minor">Minor</option>
+            </select>
+
+            <p>BPM</p>
+            <p>0:00</p>
+
+            <button id="record">Record</button>
+            <button id="start">Play Button</button>
+            <button id="stop">Stop</button>
+            <button>Save</button>
+            <button href="./login.js">Logout</button>
+          </div>
