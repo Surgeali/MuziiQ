@@ -8,18 +8,15 @@
 
 
 ## Description
-Elevator Pitch: Live streamed musical game where users can make music together.
+Elevator Pitch: Single paged digital audio workstation with synth, and drum loops.
 
 ### MVP
 
 - user can login, signup, logout
 - user can pick an instrument
 - user can dipslay/play instrument using keyboard
-- display icon for users in session
-- upload custom sound files
-- track score
-- leaderboard
-- user can upload or take a profile pic
+- user can use sequencized drums and bass
+-user can record their playthrough 
 
 ### Additonal Features
 
