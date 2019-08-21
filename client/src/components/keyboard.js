@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./keyboard.css";
 import $ from 'jquery';
+import { ENETDOWN } from "constants";
 
 
 const keyMap = {
@@ -29,6 +30,9 @@ let noteFreq = null;
 let customWaveform = null;
 let sineTerms = null;
 let cosineTerms = null;
+let recordingEnabled = false;
+let mode = undefined;
+
 
 // FUNCTION DECLARATIONS
 function createNoteTable() {
@@ -169,12 +173,51 @@ function setup() {
     };
 
     let oscilators = {};
+    let recording = ['a', 'a', 's', 's', 'd', 'd'];
+
+    function playback() {
+        let handle = setInterval(() => {
+            if (recording.length === 0) {
+                clearInterval(handle);
+                return;
+            } else {
+                let key = recording.shift();
+                let osc;
+
+                // decide to turn osc on or off
+                if (osc = oscilators[key]) {
+                    if (osc) {
+                        osc.stop();
+                    }
+                    oscilators[key] = null;
+                } else {
+                    let freq = noteFreq[octave][keyMap[key]];
+                    if (freq) {
+                        oscilators[key] = playTone(freq);
+
+                    }
+                }
+            }
+        }, 125)
+    }
+
 
     //keyboard pressing
     document.onkeydown = function (event) {
         let octaveChange = 0;
         let mappedKey = keyMap[event.key];
         let key = event.key;
+
+        console.log('keydown', mode);
+
+        if (mode === 'play') {
+            playback();
+            return;
+        } else if (mode === 'startRecording') {
+            console.log('start recording')
+            recording = [];
+            mode = 'record';
+        }
         // console.log("key " + oscilators[event.key]);
 
         if (oscilators[event.key]) {
@@ -193,16 +236,34 @@ function setup() {
             octaveChange++;
             key = mappedKey[1];
         }
+
         // console.log(key, octaveChange);
+
         let freq = noteFreq[octave + octaveChange][keyMap[key]];
         if (freq) {
-            console.log("HERE" + freq);
+            if (mode === 'record') {
+                recording.push(key);
+
+            }
+            console.log("HERE... " + freq);
             oscilators[key] = playTone(freq);
+
+            // function userInput(freq) {
+            //     recording.push(document.freq.value);
+            //     console.log(recording); //to confirm it has been added to the array
+            // }
         }
     };
 
     document.onkeyup = function (event) {
         var osc = oscilators[event.key];
+
+        if (mode === 'record') {
+            recording.push(event.key);
+            console.log(recording)
+
+
+        }
         if (osc) {
             osc.stop();
         }
@@ -210,6 +271,7 @@ function setup() {
         oscilators[event.key] = null;
     };
 }
+
 
 function playTone(freq) {
     let osc = audioContext.createOscillator();
@@ -234,14 +296,13 @@ function changeVolume(event) {
     masterGainNode.gain.value = volumeControl.value;
 }
 
-
 class Keyboard extends Component {
+
 
     componentDidMount = () => {
 
         setup();
 
-        console.log('component')
         $(document).keydown(event => {
             console.log(event)
             if (keyMap.hasOwnProperty(event.key)) {
@@ -260,7 +321,12 @@ class Keyboard extends Component {
     }
 
     render() {
-        alert(this.props.record)
+        console.log('component')
+        console.log(this.props.mode)
+        mode = this.props.mode;
+        if (mode === 'record') {
+            mode = 'startRecording';
+        }
 
         return (
             <div>
@@ -338,7 +404,7 @@ class Keyboard extends Component {
 
                 <div className="settingsBar">
                     <div className="left">
-                        <span>Volume: </span>
+                        <span style={{ color: 'white' }}>Volume: </span>
                         <input
                             type="range"
                             min="0.0"
@@ -354,7 +420,7 @@ class Keyboard extends Component {
                         </datalist>
                     </div>
                     <div className="right">
-                        <span>Current waveform: </span>
+                        <span style={{ color: 'white' }}>Current waveform: </span>
                         <select name="waveform">
                             <option value="sine">Sine</option>
                             <option value="square" selected>Square</option>

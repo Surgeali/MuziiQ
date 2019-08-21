@@ -37,7 +37,7 @@ class NavBar extends Component {
 
                     <div>
                         <h1 style={{ color: 'white' }}>Markable Music</h1>
-                        <p style={{ color: 'white' }}>Make it sound remarkable</p>
+                        <h5 style={{ color: 'white' }}>Make it sound remarkable</h5>
                     </div>
                     <div style={this.styles.menu} id="menu">
 
@@ -45,10 +45,10 @@ class NavBar extends Component {
                         <p>0:00</p>
 
                         <button id="record" onClick={this.props.recordPressed}>Record</button>
-                        <button id="start">Play Button</button>
-                        <button id="stop">Stop</button>
-                        <button>Save</button>
-                        <button href="./login.js">Logout</button>
+                        <button id="start" onClick={this.props.playPressed}>Play</button>
+                        <button id="stop" onClick={this.props.stopPressed}>Stop</button>
+                        <button id = "save" onClick={this.props.savePressed}>Save</button>
+                        <button href="../src/App.js">Logout</button>
                     </div>
                 </div>
             </div>
