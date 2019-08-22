@@ -9,6 +9,42 @@
     background: #000000;
   }
   
+  .powerMode {
+    position: absolute;
+    width: 154px;
+    height: 49px;
+    left: 818px;
+    top: 560px;
+    z-index: 1;
+    background: rgb(172, 172, 172);
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 28px;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  
+    color: black;
+  }
+  
+  .powerModeOn {
+    position: absolute;
+    width: 154px;
+    height: 49px;
+    left: 818px;
+    top: 560px;
+    z-index: 1;
+    background: rgb(233, 1, 1);
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 28px;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  
+    color: black;
+  }
+
 
   #keyboard {
     z-index: 1;
@@ -40,7 +76,7 @@
   
   /* Letters on Keys */
   
-  #a {
+ #a {
     left: 321px;
   }
   #s {
