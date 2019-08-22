@@ -186,4 +186,6 @@
     );
     filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#131313', endColorstr='#2b2a2b', GradientType=0);
   }
-  
+  #m{
+    color: white;
+  }

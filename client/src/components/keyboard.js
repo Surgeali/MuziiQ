@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import "./keyboard.css";
 import $ from 'jquery';
-import { ENETDOWN } from "constants";
+import { ENETDOWN, DH_CHECK_P_NOT_SAFE_PRIME } from "constants";
 
 
-const keyMap = {
+const cssKeyMap = {
     a: 'white-pressed',
     s: 'white-pressed',
     d: 'white-pressed',
@@ -16,23 +16,83 @@ const keyMap = {
     e: 'black-pressed',
     t: 'black-pressed',
     y: 'black-pressed',
-    u: 'black-pressed'
+    u: 'black-pressed',
+    m: 'powerModeOn'
 }
+var powerMode = false;
+
+$(document).ready(() => {
+    $(document).keydown(event => {
+        // FOCUSED ON WHEN M IS PRESSED
+        // Check first if key pressed was m
+        // if m was pressed we then need to check the current class on the element
+        // if class is powerModeOn then we need to remove this class
+        // else frop in to next code block
+        if (cssKeyMap.hasOwnProperty(event.key)) {
+            if (event.key === 'm') {
+                // let test = $(`#${event.key}`).attr("class").split(' ');
+                // if (test.includes(cssKeyMap[event.key])) {
+                //     $(`#${event.key}`).removeClass(cssKeyMap[event.key]);
+                // } else {
+                //     $(`#${event.key}`).addClass(cssKeyMap[event.key]);
+                // }
+            } else {
+                $(`#${event.key}`).addClass(cssKeyMap[event.key]);
+            }
+        }
+    });
+
+    $(document).keyup(event => {
+        // console.log(keymap.hasOwnProperty(event.key));
+        if (keyMap.hasOwnProperty(event.key) && event.key !== 'm') {
+            $(`#${event.key}`).removeClass(keyMap[event.key]);
+        }
+    });
+
+});
 
 // GLOBAL REFERENCES
 let audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let oscList = [];
 let masterGainNode = null;
-let keyboard;
-let wavePicker;
-let volumeControl;
-let noteFreq = null;
+let keyboard = document.querySelector(".keyboard");
+let wavePicker = document.querySelector("select[name='waveform']");
+let volumeControl = document.querySelector("input[name='volume']");
 let customWaveform = null;
 let sineTerms = null;
 let cosineTerms = null;
 let recordingEnabled = false;
 let mode = undefined;
+let key = "";
 
+const keyMap = {
+    a: "C",
+    s: "D",
+    d: "E",
+    f: "F",
+    g: "G",
+    h: "A",
+    j: "B",
+    w: "C#",
+    e: "D#",
+    t: "F#",
+    y: "G#",
+    u: "A#"
+};
+const chordMap = {
+    a: ["C", "G"],
+    s: ["D", "A"],
+    d: ["E", "B"],
+    f: ["F", "^C"],
+    g: ["G", "^D"],
+    h: ["A", "^E"],
+    j: ["B", "^F#"],
+    w: ["C#", "^G#"],
+    e: ["D#", "^A#"],
+    t: ["F#", "^C#"],
+    y: ["G#", "^D#"],
+    u: ["A#", "^F"]
+};
 
 // FUNCTION DECLARATIONS
 function createNoteTable() {
@@ -135,14 +195,18 @@ function createNoteTable() {
     noteFreq[8]["C"] = 4186.009044809578154;
     return noteFreq;
 }
+
+const noteFreq = createNoteTable();
+let oscilators = {};
+let recording = ['a', 'a', 's', 's', 'd', 'd'];
+let octaveChange = 0;
+let octave = 3;
+
 //The setup function is responsible for building the keyboard and preparing the app to play music.
 function setup() {
     keyboard = document.querySelector(".keyboard");
     wavePicker = document.querySelector("select[name='waveform']");
     volumeControl = document.querySelector("input[name='volume']");
-
-    let octave = 3;
-    noteFreq = createNoteTable();
 
     volumeControl.addEventListener("change", changeVolume, false);
 
@@ -157,105 +221,136 @@ function setup() {
         oscList[i] = [];
     }
 
-    const keyMap = {
-        a: "C",
-        s: "D",
-        d: "E",
-        f: "F",
-        g: "G",
-        h: "A",
-        j: "B",
-        w: "C#",
-        e: "D#",
-        t: "F#",
-        y: "G#",
-        u: "A#"
-    };
-
-    let oscilators = {};
-    let recording = ['a', 'a', 's', 's', 'd', 'd'];
-
-    function playback() {
-        let handle = setInterval(() => {
-            if (recording.length === 0) {
-                clearInterval(handle);
-                return;
-            } else {
-                let key = recording.shift();
-                let osc;
-
-                // decide to turn osc on or off
-                if (osc = oscilators[key]) {
-                    if (osc) {
-                        osc.stop();
-                    }
-                    oscilators[key] = null;
-                } else {
-                    let freq = noteFreq[octave][keyMap[key]];
-                    if (freq) {
-                        oscilators[key] = playTone(freq);
-
-                    }
-                }
-            }
-        }, 125)
-    }
-
-
     //keyboard pressing
     document.onkeydown = function (event) {
-        let octaveChange = 0;
-        let mappedKey = keyMap[event.key];
-        let key = event.key;
-
-        console.log('keydown', mode);
-
-        if (mode === 'play') {
-            playback();
-            return;
-        } else if (mode === 'startRecording') {
-            console.log('start recording')
-            recording = [];
-            mode = 'record';
-        }
-        // console.log("key " + oscilators[event.key]);
-
-        if (oscilators[event.key]) {
-            return;
-        }
-
-        if (event.key === "x") {
-            octave = octave + 1;
-            return;
-        } else if (event.key === "z") {
-            octave = octave - 1;
-            return;
-        }
-
-        if (mappedKey && mappedKey[0] === "^") {
-            octaveChange++;
-            key = mappedKey[1];
-        }
-
-        // console.log(key, octaveChange);
-
-        let freq = noteFreq[octave + octaveChange][keyMap[key]];
-        if (freq) {
-            if (mode === 'record') {
-                recording.push(key);
-
-            }
-            console.log("HERE... " + freq);
-            oscilators[key] = playTone(freq);
-
-            // function userInput(freq) {
-            //     recording.push(document.freq.value);
-            //     console.log(recording); //to confirm it has been added to the array
-            // }
-        }
+        keyDown(event);
     };
 
     document.onkeyup = function (event) {
+        keyUp(event);
+    };
+
+    //=============_____---------________--------=============//
+
+    // console.log(key, octaveChange);
+
+    // let freq = noteFreq[octave + octaveChange][keyMap[key]];
+    // if (freq) {
+    //     if (mode === 'record') {
+    //         recording.push(key);
+
+    //     }
+    //     console.log("HERE... " + freq);
+    //     oscilators[key] = playTone(freq);
+
+    //     // function userInput(freq) {
+    //     //     recording.push(document.freq.value);
+    //     //     console.log(recording); //to confirm it has been added to the array
+    //     // }
+    // }
+};
+
+function specialKey(event) {
+    console.log('keydown', mode);
+    if (event.key === 'm') {
+        powerMode = !powerMode;
+        let test = $(`#${event.key}`).attr("class").split(' ');
+        if (test.includes(cssKeyMap[event.key])) {
+            $(`#${event.key}`).removeClass(cssKeyMap[event.key]);
+        } else {
+            $(`#${event.key}`).addClass(cssKeyMap[event.key]);
+        }
+    }
+    if (event.key === "x") {
+        octave = octave + 1;
+        return;
+    } else if (event.key === "z") {
+        octave = octave - 1;
+        return;
+    }
+
+}
+
+
+function keyDown(event) {
+    let mappedKey = keyMap[event.key];
+    let key = event.key;
+
+    if (!keyMap[key]) {
+        return specialKey(event);
+    }
+
+    if (oscilators[event.key]) {
+        return;
+    }
+
+    if (mode === 'play') {
+        playback();
+        return;
+    } else if (mode === 'startRecording') {
+        console.log('start recording')
+        recording = [];
+        mode = 'record';
+    }
+    // console.log("key " + oscilators[event.key]);
+
+
+
+    if (mappedKey && mappedKey[0] === "^") {
+        octaveChange++;
+        key = mappedKey[1];
+    }
+    //=============_____---------________--------=============//
+    // handles when in power mode for cords
+    if (!powerMode) {
+        // not in power mode
+
+        let freq = noteFreq[octave + octaveChange][keyMap[key]];
+        oscilators[key] = playTone(freq);
+    } else {
+        // in power mode
+
+        let notes = chordMap[key];
+        console.log("notes", notes); // ["C", "G"]
+        // before add to oscilator we need to verify if the key exists already
+        notes.forEach(note => {
+            if (note[0] === "^") {
+                octaveChange++;
+                note = note[1];
+            }
+            console.log("****CHECKING****", !oscilators[note]);
+
+            if (!oscilators[note]) {
+                let freq = noteFreq[octave + octaveChange][note];
+                oscilators[note] = playTone(freq);
+            }
+        });
+        console.log(oscilators);
+    }
+
+
+}
+
+function keyUp(event) {
+    console.log('powerMode keyUp', powerMode)
+    if (powerMode) {
+        console.log(oscilators)
+
+        if (chordMap[event.key]) {
+            chordMap[event.key].forEach(key => {
+                if (key[0] === "^") {
+                    octaveChange--;
+                    key = key[1];
+                }
+
+                let osc = oscilators[key];
+                if (osc !== null) {
+                    osc.stop();
+                    oscilators[key] = null;
+                }
+            })
+        }
+    } else {
         var osc = oscilators[event.key];
 
         if (mode === 'record') {
@@ -269,8 +364,37 @@ function setup() {
         }
 
         oscilators[event.key] = null;
-    };
+    }
 }
+
+function playback() {
+    let handle = setInterval(() => {
+        if (recording.length === 0) {
+            clearInterval(handle);
+            return;
+        } else {
+            let key = recording.shift();
+            let osc;
+
+            // decide to turn osc on or off
+            if (osc = oscilators[key]) {
+                if (osc) {
+                    osc.stop();
+                }
+                oscilators[key] = null;
+            } else {
+                let freq = noteFreq[octave][keyMap[key]];
+                if (freq) {
+                    oscilators[key] = playTone(freq);
+
+                }
+            }
+        }
+    }, 125)
+}
+
+
+
 
 
 function playTone(freq) {
@@ -303,10 +427,10 @@ class Keyboard extends Component {
 
         setup();
 
-        $(document).keydown(event => {
+        $('document').keydown(event => {
             console.log(event)
-            if (keyMap.hasOwnProperty(event.key)) {
-                $(`#${event.key}`).addClass(keyMap[event.key])
+            if (cssKeyMap.hasOwnProperty(event.key)) {
+                $(`#${event.key}`).addClass(cssKeyMap[event.key])
             } else {
                 console.log('hi?');
             }
@@ -314,7 +438,7 @@ class Keyboard extends Component {
 
         $(document).keyup(event => {
             if (keyMap.hasOwnProperty(event.key)) {
-                $(`#${event.key}`).removeClass(keyMap[event.key])
+                $(`#${event.key}`).removeClass(cssKeyMap[event.key])
 
             }
         });
@@ -326,12 +450,16 @@ class Keyboard extends Component {
         mode = this.props.mode;
         if (mode === 'record') {
             mode = 'startRecording';
+        } else if (mode === 'play') {
+            playback();
         }
 
         return (
             <div>
                 <div className="container">
                     <div className="blackBox"></div>
+                    <div class="powerMode" id="m"> Hit 'm' for Power Mode</div>
+
                     <div id="keyboard">
                         <div className="key keyboard-normal" id="a">
                             <p className="blackLetter place">a</p>
