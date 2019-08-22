@@ -80,18 +80,18 @@ const keyMap = {
     u: "A#"
 };
 const chordMap = {
-    a: ["C", "G"],
-    s: ["D", "A"],
-    d: ["E", "B"],
-    f: ["F", "^C"],
-    g: ["G", "^D"],
-    h: ["A", "^E"],
-    j: ["B", "^F#"],
-    w: ["C#", "^G#"],
-    e: ["D#", "^A#"],
-    t: ["F#", "^C#"],
-    y: ["G#", "^D#"],
-    u: ["A#", "^F"]
+    a: ['a', 'g'], // c,g
+    s: ['s', 'h'], // d, a
+    d: ['d', 'j'],// e, b
+    f: ['f', '^', 'a', 'v'],//f, c
+    g: ['g', '^', 's', 'v'],//g, d
+    h: ['h', '^', 'd', 'v'],//a, e
+    j: ['j', '^', 't', 'v'],//b, f#
+    w: ['w', '^', 'y', 'v'],//C#, g#
+    e: ['e', '^', 'u', 'v'],// d#, a#
+    t: ['t', '^', 'w', 'v'],//f#, c#
+    y: ['y', '^', 'e', 'v'],//g#, d#
+    u: ['u', '^', 'f', 'v']//a#, f
 };
 
 // FUNCTION DECLARATIONS
@@ -261,10 +261,10 @@ function specialKey(event) {
             $(`#${event.key}`).addClass(cssKeyMap[event.key]);
         }
     }
-    if (event.key === "x") {
+    if (event.key === "x" || event.key === '^') {
         octave = octave + 1;
         return;
-    } else if (event.key === "z") {
+    } else if (event.key === "z" || event.key === 'v') {
         octave = octave - 1;
         return;
     }
@@ -294,18 +294,15 @@ function keyDown(event) {
     }
     // console.log("key " + oscilators[event.key]);
 
-
-
-    if (mappedKey && mappedKey[0] === "^") {
-        octaveChange++;
-        key = mappedKey[1];
-    }
     //=============_____---------________--------=============//
     // handles when in power mode for cords
     if (!powerMode) {
         // not in power mode
+        if (mode === 'record') {
+            recording.push(event.key);
+        }
 
-        let freq = noteFreq[octave + octaveChange][keyMap[key]];
+        let freq = noteFreq[octave][keyMap[key]];
         oscilators[key] = playTone(freq);
     } else {
         // in power mode
@@ -313,18 +310,25 @@ function keyDown(event) {
         let notes = chordMap[key];
         console.log("notes", notes); // ["C", "G"]
         // before add to oscilator we need to verify if the key exists already
-        notes.forEach(note => {
-            if (note[0] === "^") {
-                octaveChange++;
-                note = note[1];
-            }
-            console.log("****CHECKING****", !oscilators[note]);
+        recording.push(notes);
+        // notes.forEach(note => {
+        //     if (note === "^") {
+        //         octave++;
+        //     } else if (note === 'v') {
+        //         octave--;
+        //     } else {
+        //         if (!oscilators[note]) {
 
-            if (!oscilators[note]) {
-                let freq = noteFreq[octave + octaveChange][note];
-                oscilators[note] = playTone(freq);
-            }
-        });
+        //             if (mode === 'record') {
+        //                 recording.push(note);
+        //                 recording.push(note);
+        //             }
+        //             let freq = noteFreq[octave][keyMap[note]];
+        //             console.log(note, freq, recording)
+        //             oscilators[note] = playTone(freq);
+        //         }
+        //     }
+        // });
         console.log(oscilators);
     }
 
@@ -333,62 +337,93 @@ function keyDown(event) {
 
 function keyUp(event) {
     console.log('powerMode keyUp', powerMode)
-    if (powerMode) {
-        console.log(oscilators)
+    let key = event.key;
+    let keys = key;
 
-        if (chordMap[event.key]) {
-            chordMap[event.key].forEach(key => {
-                if (key[0] === "^") {
-                    octaveChange--;
-                    key = key[1];
-                }
-
-                let osc = oscilators[key];
-                if (osc !== null) {
-                    osc.stop();
-                    oscilators[key] = null;
-                }
-            })
-        }
-    } else {
-        var osc = oscilators[event.key];
-
-        if (mode === 'record') {
-            recording.push(event.key);
-            console.log(recording)
+    if (!Array.isArray(key)) {
+        keys = [key];
+    }
+    if (mode === 'record') {
+        recording.push(keys)
+        console.log(recording)
 
 
-        }
+    }
+
+    keys.forEach(key => {
+        // if (powerMode) {
+        //     console.log(oscilators)
+
+        //     if (chordMap[event.key]) {
+        //         chordMap[event.key].forEach(key => {
+        //             if (key !== "^" && key !== 'v') {
+        //                 let osc = oscilators[key];
+        //                 if (osc !== null) {
+        //                     osc.stop();
+        //                     oscilators[key] = null;
+        //                 }
+        //             }
+        //         })
+        //     }
+        // } else {
+        var osc = oscilators[key];
+
         if (osc) {
             osc.stop();
         }
 
-        oscilators[event.key] = null;
+        oscilators[key] = null;
     }
+    )
 }
 
 function playback() {
+    console.log('recording', recording)
+
     let handle = setInterval(() => {
         if (recording.length === 0) {
             clearInterval(handle);
             return;
         } else {
+            console.log(recording)
             let key = recording.shift();
+            let keys = key;
+            console.log('key', key)
+            if (!key) {
+                return;
+            }
+
+            if (!Array.isArray(key)) {
+                keys = [key];
+            }
+            console.log(key);
             let osc;
 
-            // decide to turn osc on or off
-            if (osc = oscilators[key]) {
-                if (osc) {
-                    osc.stop();
+            keys.forEach(key => {
+                if (key === '^' || key === 'v') {
+                    key = recording.shift();
                 }
-                oscilators[key] = null;
-            } else {
-                let freq = noteFreq[octave][keyMap[key]];
-                if (freq) {
-                    oscilators[key] = playTone(freq);
+                // debugger;
+                // decide to turn osc on or off
+                console.log('playback', oscilators)
+                console.log('key', key, oscilators[key])
 
+                if (osc = oscilators[key]) {
+                    console.log('key off', key, oscilators)
+                    if (osc) {
+                        osc.stop();
+                    }
+                    oscilators[key] = null;
+                } else {
+                    console.log('key on', key, oscilators)
+
+                    let freq = noteFreq[octave][keyMap[key]];
+                    if (freq) {
+                        oscilators[key] = playTone(freq);
+
+                    }
                 }
-            }
+            });
         }
     }, 125)
 }
