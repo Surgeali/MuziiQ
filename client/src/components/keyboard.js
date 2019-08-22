@@ -16,8 +16,12 @@ const keyMap = {
     e: 'black-pressed',
     t: 'black-pressed',
     y: 'black-pressed',
-    u: 'black-pressed'
-}
+    u: 'black-pressed',
+    m: "powerModeOn"
+};
+
+var powerMode = false;
+
 
 // GLOBAL REFERENCES
 let audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -175,6 +179,7 @@ function setup() {
     let oscilators = {};
     let recording = ['a', 'a', 's', 's', 'd', 'd'];
 
+    //record function
     function playback() {
         let handle = setInterval(() => {
             if (recording.length === 0) {
@@ -209,7 +214,7 @@ function setup() {
         let key = event.key;
 
         console.log('keydown', mode);
-
+        //recording
         if (mode === 'play') {
             playback();
             return;
@@ -272,7 +277,6 @@ function setup() {
     };
 }
 
-
 function playTone(freq) {
     let osc = audioContext.createOscillator();
     osc.connect(masterGainNode);
@@ -330,15 +334,16 @@ class Keyboard extends Component {
 
         return (
             <div>
-                <div className="container">
-                    <div className="blackBox"></div>
-                    <div id="keyboard">
-                        <div className="key keyboard-normal" id="a">
-                            <p className="blackLetter place">a</p>
-                            <p className="whiteNote place">C</p>
-                        </div>
+            <div className="container">
+                <div class="blackBox"></div>
+                <div class="powerMode" id="m"> Hit 'm' for Power Mode</div>
+                
+            <div id="keyboard">
+                <div class="key keyboard-normal" id="a">
+                <p class="blackLetter">a</p>
+                <p class="whiteNote">C</p>
+                </div>
 
-                        <div className="powerBox" id="powerBox"></div>
 
                         <div className="key keyboard-accidental" id="w">
                             <p className="whiteLetter place">w</p>
