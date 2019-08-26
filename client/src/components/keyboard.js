@@ -230,7 +230,6 @@ function setup() {
         keyUp(event);
     };
 
-
     //=============_____---------________--------=============//
 
     // console.log(key, octaveChange);
@@ -430,6 +429,9 @@ function playback() {
 }
 
 
+
+
+
 function playTone(freq) {
     let osc = audioContext.createOscillator();
     osc.connect(masterGainNode);
@@ -499,6 +501,7 @@ class Keyboard extends Component {
                             <p className="whiteNote place">C</p>
                         </div>
 
+                        <div className="powerBox" id="powerBox"></div>
 
                         <div className="key keyboard-accidental" id="w">
                             <p className="whiteLetter place">w</p>

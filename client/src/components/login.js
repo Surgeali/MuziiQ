@@ -1,7 +1,28 @@
 import React, { Component } from "react";
 import "./login.css";
+import API from "../utils/API";
 
 class Login extends Component {
+
+    state = {
+        username: '',
+        password: ''
+    }
+    componentDidMount() {
+        this.loadUsers();
+    }
+    
+    loadUsers = () => {
+        const newUser = {
+            username: this.state.username,
+            password: this.state.password
+        }
+        API.saveUser(newUser)
+        .then(res => this.setState({ users: res.data
+        }))
+        .catch(err => console.log(err));
+    }
+
     render() {
         return (
             <div className="container">

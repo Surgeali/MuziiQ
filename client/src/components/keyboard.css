@@ -45,7 +45,6 @@
     color: black;
   }
 
-
   #keyboard {
     z-index: 1;
   }
@@ -76,7 +75,7 @@
   
   /* Letters on Keys */
   
- #a {
+  #a {
     left: 321px;
   }
   #s {
