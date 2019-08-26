@@ -1,10 +1,15 @@
-import React, { Component } from "react";
-import "./keyboard.css";
-import $ from 'jquery';
-import { ENETDOWN, DH_CHECK_P_NOT_SAFE_PRIME } from "constants";
-
-
-const cssKeyMap = {
+import React, {
+    Component
+  } from "react";
+  import "./keyboard.css";
+  import $ from 'jquery';
+  import {
+    ENETDOWN,
+    DH_CHECK_P_NOT_SAFE_PRIME
+  } from "constants";
+  
+  
+  const cssKeyMap = {
     a: 'white-pressed',
     s: 'white-pressed',
     d: 'white-pressed',
@@ -18,54 +23,54 @@ const cssKeyMap = {
     y: 'black-pressed',
     u: 'black-pressed',
     m: 'powerModeOn'
-}
-var powerMode = false;
-
-$(document).ready(() => {
+  }
+  var powerMode = false;
+  
+  $(document).ready(() => {
     $(document).keydown(event => {
-        // FOCUSED ON WHEN M IS PRESSED
-        // Check first if key pressed was m
-        // if m was pressed we then need to check the current class on the element
-        // if class is powerModeOn then we need to remove this class
-        // else frop in to next code block
-        if (cssKeyMap.hasOwnProperty(event.key)) {
-            if (event.key === 'm') {
-                // let test = $(`#${event.key}`).attr("class").split(' ');
-                // if (test.includes(cssKeyMap[event.key])) {
-                //     $(`#${event.key}`).removeClass(cssKeyMap[event.key]);
-                // } else {
-                //     $(`#${event.key}`).addClass(cssKeyMap[event.key]);
-                // }
-            } else {
-                $(`#${event.key}`).addClass(cssKeyMap[event.key]);
-            }
+      // FOCUSED ON WHEN M IS PRESSED
+      // Check first if key pressed was m
+      // if m was pressed we then need to check the current class on the element
+      // if class is powerModeOn then we need to remove this class
+      // else frop in to next code block
+      if (cssKeyMap.hasOwnProperty(event.key)) {
+        if (event.key === 'm') {
+          // let test = $(`#${event.key}`).attr("class").split(' ');
+          // if (test.includes(cssKeyMap[event.key])) {
+          //     $(`#${event.key}`).removeClass(cssKeyMap[event.key]);
+          // } else {
+          //     $(`#${event.key}`).addClass(cssKeyMap[event.key]);
+          // }
+        } else {
+          $(`#${event.key}`).addClass(cssKeyMap[event.key]);
         }
+      }
     });
-
+  
     $(document).keyup(event => {
-        // console.log(keymap.hasOwnProperty(event.key));
-        if (keyMap.hasOwnProperty(event.key) && event.key !== 'm') {
-            $(`#${event.key}`).removeClass(keyMap[event.key]);
-        }
+      // console.log(keymap.hasOwnProperty(event.key));
+      if (keyMap.hasOwnProperty(event.key) && event.key !== 'm') {
+        $(`#${event.key}`).removeClass(keyMap[event.key]);
+      }
     });
-
-});
-
-// GLOBAL REFERENCES
-let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-let oscList = [];
-let masterGainNode = null;
-let keyboard = document.querySelector(".keyboard");
-let wavePicker = document.querySelector("select[name='waveform']");
-let volumeControl = document.querySelector("input[name='volume']");
-let customWaveform = null;
-let sineTerms = null;
-let cosineTerms = null;
-let recordingEnabled = false;
-let mode = undefined;
-let key = "";
-
-const keyMap = {
+  
+  });
+  
+  // GLOBAL REFERENCES
+  let audioContext = new(window.AudioContext || window.webkitAudioContext)();
+  let oscList = [];
+  let masterGainNode = null;
+  let keyboard = document.querySelector(".keyboard");
+  let wavePicker = document.querySelector("select[name='waveform']");
+  let volumeControl = document.querySelector("input[name='volume']");
+  let customWaveform = null;
+  let sineTerms = null;
+  let cosineTerms = null;
+  let recordingEnabled = false;
+  let mode = undefined;
+  let key = "";
+  
+  const keyMap = {
     a: "C",
     s: "D",
     d: "E",
@@ -78,30 +83,30 @@ const keyMap = {
     t: "F#",
     y: "G#",
     u: "A#"
-};
-const chordMap = {
+  };
+  const chordMap = {
     a: ['a', 'g'], // c,g
     s: ['s', 'h'], // d, a
-    d: ['d', 'j'],// e, b
-    f: ['f', '^', 'a', 'v'],//f, c
-    g: ['g', '^', 's', 'v'],//g, d
-    h: ['h', '^', 'd', 'v'],//a, e
-    j: ['j', '^', 't', 'v'],//b, f#
-    w: ['w', '^', 'y', 'v'],//C#, g#
-    e: ['e', '^', 'u', 'v'],// d#, a#
-    t: ['t', '^', 'w', 'v'],//f#, c#
-    y: ['y', '^', 'e', 'v'],//g#, d#
-    u: ['u', '^', 'f', 'v']//a#, f
-};
-
-// FUNCTION DECLARATIONS
-function createNoteTable() {
+    d: ['d', 'j'], // e, b
+    f: ['f', '^', 'a', 'v'], //f, c
+    g: ['g', '^', 's', 'v'], //g, d
+    h: ['h', '^', 'd', 'v'], //a, e
+    j: ['j', '^', 't', 'v'], //b, f#
+    w: ['w', '^', 'y', 'v'], //C#, g#
+    e: ['e', '^', 'u', 'v'], // d#, a#
+    t: ['t', '^', 'w', 'v'], //f#, c#
+    y: ['y', '^', 'e', 'v'], //g#, d#
+    u: ['u', '^', 'f', 'v'] //a#, f
+  };
+  
+  // FUNCTION DECLARATIONS
+  function createNoteTable() {
     let noteFreq = [];
-
+  
     for (let i = 0; i < 9; i++) {
-        noteFreq[i] = [];
+      noteFreq[i] = [];
     }
-
+  
     noteFreq[1]["C"] = 32.703195662574829;
     noteFreq[1]["C#"] = 34.647828872109012;
     noteFreq[1]["D"] = 36.708095989675945;
@@ -114,7 +119,7 @@ function createNoteTable() {
     noteFreq[1]["A"] = 55.0;
     noteFreq[1]["A#"] = 58.270470189761239;
     noteFreq[1]["B"] = 61.735412657015513;
-
+  
     noteFreq[2]["C"] = 65.406391325149658;
     noteFreq[2]["C#"] = 69.295657744218024;
     noteFreq[2]["D"] = 73.41619197935189;
@@ -127,7 +132,7 @@ function createNoteTable() {
     noteFreq[2]["A"] = 110.0;
     noteFreq[2]["A#"] = 116.540940379522479;
     noteFreq[2]["B"] = 123.470825314031027;
-
+  
     noteFreq[3]["C"] = 130.812782650299317;
     noteFreq[3]["C#"] = 138.591315488436048;
     noteFreq[3]["D"] = 146.83238395870378;
@@ -140,7 +145,7 @@ function createNoteTable() {
     noteFreq[3]["A"] = 220.0;
     noteFreq[3]["A#"] = 233.081880759044958;
     noteFreq[3]["B"] = 246.941650628062055;
-
+  
     noteFreq[4]["C"] = 261.625565300598634;
     noteFreq[4]["C#"] = 277.182630976872096;
     noteFreq[4]["D"] = 293.66476791740756;
@@ -153,7 +158,7 @@ function createNoteTable() {
     noteFreq[4]["A"] = 440.0;
     noteFreq[4]["A#"] = 466.163761518089916;
     noteFreq[4]["B"] = 493.883301256124111;
-
+  
     noteFreq[5]["C"] = 523.251130601197269;
     noteFreq[5]["C#"] = 554.365261953744192;
     noteFreq[5]["D"] = 587.32953583481512;
@@ -166,7 +171,7 @@ function createNoteTable() {
     noteFreq[5]["A"] = 880.0;
     noteFreq[5]["A#"] = 932.327523036179832;
     noteFreq[5]["B"] = 987.766602512248223;
-
+  
     noteFreq[6]["C"] = 1046.502261202394538;
     noteFreq[6]["C#"] = 1108.730523907488384;
     noteFreq[6]["D"] = 1174.659071669630241;
@@ -179,7 +184,7 @@ function createNoteTable() {
     noteFreq[6]["A"] = 1760.0;
     noteFreq[6]["A#"] = 1864.655046072359665;
     noteFreq[6]["B"] = 1975.533205024496447;
-
+  
     noteFreq[7]["C"] = 2093.004522404789077;
     noteFreq[7]["C#"] = 2217.461047814976769;
     noteFreq[7]["D"] = 2349.318143339260482;
@@ -194,408 +199,441 @@ function createNoteTable() {
     noteFreq[7]["B"] = 3951.066410048992894;
     noteFreq[8]["C"] = 4186.009044809578154;
     return noteFreq;
-}
-
-const noteFreq = createNoteTable();
-let oscilators = {};
-let recording = ['a', 'a', 's', 's', 'd', 'd'];
-let octaveChange = 0;
-let octave = 3;
-
-//The setup function is responsible for building the keyboard and preparing the app to play music.
-function setup() {
+  }
+  
+  const noteFreq = createNoteTable();
+  let oscilators = {};
+  let recording = [];
+  let octaveChange = 0;
+  let octave = 3;
+  
+  //The setup function is responsible for building the keyboard and preparing the app to play music.
+  function setup() {
     keyboard = document.querySelector(".keyboard");
     wavePicker = document.querySelector("select[name='waveform']");
     volumeControl = document.querySelector("input[name='volume']");
-
+  
     volumeControl.addEventListener("change", changeVolume, false);
-
+  
     sineTerms = new Float32Array([0, 0, 1, 0, 1]);
     cosineTerms = new Float32Array(sineTerms.length);
     customWaveform = audioContext.createPeriodicWave(cosineTerms, sineTerms);
     masterGainNode = audioContext.createGain();
     masterGainNode.connect(audioContext.destination);
     masterGainNode.gain.value = volumeControl.value;
-
+  
     for (let i = 0; i < 9; i++) {
-        oscList[i] = [];
+      oscList[i] = [];
     }
-
+  
     //keyboard pressing
-    document.onkeydown = function (event) {
-        keyDown(event);
+    document.onkeydown = function(event) {
+      keyDown(event);
     };
-
-    document.onkeyup = function (event) {
-        keyUp(event);
+  
+    document.onkeyup = function(event) {
+      keyUp(event);
     };
-
+  
+  
     //=============_____---------________--------=============//
-
+  
     // console.log(key, octaveChange);
-
+  
     // let freq = noteFreq[octave + octaveChange][keyMap[key]];
     // if (freq) {
     //     if (mode === 'record') {
     //         recording.push(key);
-
+  
     //     }
     //     console.log("HERE... " + freq);
     //     oscilators[key] = playTone(freq);
-
+  
     //     // function userInput(freq) {
     //     //     recording.push(document.freq.value);
     //     //     console.log(recording); //to confirm it has been added to the array
     //     // }
     // }
-};
-
-function specialKey(event) {
+  };
+  
+  function isSpecialKey(event) {
+    // console.log('isSpecialKey', event.key, !keyMap[event.key])
+    return !keyMap[event.key];
+  }
+  function specialKey(event) {
     console.log('keydown', mode);
     if (event.key === 'm') {
-        powerMode = !powerMode;
-        let test = $(`#${event.key}`).attr("class").split(' ');
-        if (test.includes(cssKeyMap[event.key])) {
-            $(`#${event.key}`).removeClass(cssKeyMap[event.key]);
-        } else {
-            $(`#${event.key}`).addClass(cssKeyMap[event.key]);
-        }
+      powerMode = !powerMode;
+      let test = $(`#${event.key}`).attr("class").split(' ');
+      if (test.includes(cssKeyMap[event.key])) {
+        $(`#${event.key}`).removeClass(cssKeyMap[event.key]);
+      } else {
+        $(`#${event.key}`).addClass(cssKeyMap[event.key]);
+      }
     }
     if (event.key === "x" || event.key === '^') {
-        octave = octave + 1;
-        return;
+      octave = octave + 1;
+      return;
     } else if (event.key === "z" || event.key === 'v') {
-        octave = octave - 1;
-        return;
+      octave = octave - 1;
+      return;
     }
-
-}
-
-
-function keyDown(event) {
+  
+  }
+  
+  
+  function keyDown(event) {
     let mappedKey = keyMap[event.key];
     let key = event.key;
-
-    if (!keyMap[key]) {
-        return specialKey(event);
+  
+    if(isSpecialKey(event)) {
+      return specialKey(event);
     }
-
     if (oscilators[event.key]) {
-        return;
+      return;
     }
-
-    if (mode === 'play') {
-        playback();
-        return;
-    } else if (mode === 'startRecording') {
-        console.log('start recording')
-        recording = [];
-        mode = 'record';
-    }
+  
     // console.log("key " + oscilators[event.key]);
-
+  
     //=============_____---------________--------=============//
     // handles when in power mode for cords
     if (!powerMode) {
-        // not in power mode
-        if (mode === 'record') {
-            recording.push(event.key);
-        }
-
-        let freq = noteFreq[octave][keyMap[key]];
-        oscilators[key] = playTone(freq);
+      // not in power mode
+      if (mode === 'record') {
+        recording.push(event.key);
+      }
+  
+      let freq = noteFreq[octave][keyMap[key]];
+      oscilators[key] = playTone(freq);
     } else {
-        // in power mode
-
-        let notes = chordMap[key];
-        console.log("notes", notes); // ["C", "G"]
-        // before add to oscilator we need to verify if the key exists already
+      // in power mode
+  
+      let notes = chordMap[key];
+      // before add to oscilator we need to verify if the key exists already
+      if (mode === 'record') {
         recording.push(notes);
-        // notes.forEach(note => {
-        //     if (note === "^") {
-        //         octave++;
-        //     } else if (note === 'v') {
-        //         octave--;
-        //     } else {
-        //         if (!oscilators[note]) {
-
-        //             if (mode === 'record') {
-        //                 recording.push(note);
-        //                 recording.push(note);
-        //             }
-        //             let freq = noteFreq[octave][keyMap[note]];
-        //             console.log(note, freq, recording)
-        //             oscilators[note] = playTone(freq);
-        //         }
-        //     }
-        // });
-        console.log(oscilators);
+      }
+      notes.forEach(note => {
+        if (note === "^") {
+          octave++;
+        } else if (note === 'v') {
+          octave--;
+        } else {
+          if (!oscilators[note]) {
+  
+            let freq = noteFreq[octave][keyMap[note]];
+            oscilators[note] = playTone(freq);
+          }
+        }
+      });
     }
-
-
-}
-
-function keyUp(event) {
-    console.log('powerMode keyUp', powerMode)
+  
+  
+  }
+  
+  function keyUp(event) {
     let key = event.key;
-    let keys = key;
-
-    if (!Array.isArray(key)) {
-        keys = [key];
+    let keys = [key];
+  
+    if(isSpecialKey(event)) {
+      return;
     }
     if (mode === 'record') {
-        recording.push(keys)
-        console.log(recording)
-
-
+      if(powerMode) {
+        keys = chordMap[key];
+        recording.push(keys);
+      } else {
+        recording.push(key)
+      }
     }
-
     keys.forEach(key => {
-        // if (powerMode) {
-        //     console.log(oscilators)
-
-        //     if (chordMap[event.key]) {
-        //         chordMap[event.key].forEach(key => {
-        //             if (key !== "^" && key !== 'v') {
-        //                 let osc = oscilators[key];
-        //                 if (osc !== null) {
-        //                     osc.stop();
-        //                     oscilators[key] = null;
-        //                 }
-        //             }
-        //         })
-        //     }
-        // } else {
-        var osc = oscilators[key];
-
-        if (osc) {
-            osc.stop();
-        }
-
-        oscilators[key] = null;
-    }
-    )
-}
-
-function playback() {
-    console.log('recording', recording)
-
-    let handle = setInterval(() => {
-        if (recording.length === 0) {
-            clearInterval(handle);
-            return;
+        if (powerMode) {
+  
+          if (chordMap[event.key]) {
+            chordMap[event.key].forEach(key => {
+              if (key !== "^" && key !== 'v') {
+                let osc = oscilators[key];
+                if (osc !== null) {
+                  osc.stop();
+                  oscilators[key] = null;
+                }
+              }
+            })
+          }
         } else {
-            console.log(recording)
-            let key = recording.shift();
-            let keys = key;
-            console.log('key', key)
-            if (!key) {
-                return;
-            }
-
-            if (!Array.isArray(key)) {
-                keys = [key];
-            }
-            console.log(key);
-            let osc;
-
-            keys.forEach(key => {
-                if (key === '^' || key === 'v') {
-                    key = recording.shift();
-                }
-                // debugger;
-                // decide to turn osc on or off
-                console.log('playback', oscilators)
-                console.log('key', key, oscilators[key])
-
-                if (osc = oscilators[key]) {
-                    console.log('key off', key, oscilators)
-                    if (osc) {
-                        osc.stop();
-                    }
-                    oscilators[key] = null;
-                } else {
-                    console.log('key on', key, oscilators)
-
-                    let freq = noteFreq[octave][keyMap[key]];
-                    if (freq) {
-                        oscilators[key] = playTone(freq);
-
-                    }
-                }
-            });
+          var osc = oscilators[key];
+  
+          if (osc) {
+            osc.stop();
+          }
+  
+          oscilators[key] = null;
         }
-    }, 125)
-}
-
-
-
-
-
-function playTone(freq) {
-    let osc = audioContext.createOscillator();
-    osc.connect(masterGainNode);
-
-    let type = wavePicker.options[wavePicker.selectedIndex].value;
-
-    if (type == "custom") {
-        osc.setPeriodicWave(customWaveform);
-    } else {
-        osc.type = type;
+      })
     }
-
-
-    osc.frequency.value = freq;
-    osc.start();
-
-    return osc;
-}
-
-function changeVolume(event) {
-    masterGainNode.gain.value = volumeControl.value;
-}
-
-class Keyboard extends Component {
-
-
-    componentDidMount = () => {
-
-        setup();
-
-        $('document').keydown(event => {
-            console.log(event)
-            if (cssKeyMap.hasOwnProperty(event.key)) {
-                $(`#${event.key}`).addClass(cssKeyMap[event.key])
+  
+    function playback() {
+      let handle = setInterval(() => {
+        if (recording.length === 0) {
+          clearInterval(handle);
+          return;
+        } else {
+          let key = recording.shift();
+          let keys = key;
+  
+          if (!key) {
+            return;
+          }
+  
+          if (!Array.isArray(key)) {
+            keys = [key];
+          }
+          let osc;
+  
+          keys.forEach(key => {
+            if (key === '^') {
+              octave++;
+            } else if(key === 'v') {
+              octave--;
+            }
+            if (osc = oscilators[key]) {
+              if (osc) {
+                osc.stop();
+              }
+              oscilators[key] = null;
             } else {
-                console.log('hi?');
+              let freq = noteFreq[octave][keyMap[key]];
+              if (freq) {
+                oscilators[key] = playTone(freq);
+              }
             }
-        });
-
-        $(document).keyup(event => {
-            if (keyMap.hasOwnProperty(event.key)) {
-                $(`#${event.key}`).removeClass(cssKeyMap[event.key])
-
-            }
-        });
+          });
+        }
+      }, 125)
     }
-
-    render() {
-        console.log('component')
-        console.log(this.props.mode)
+  
+  
+    function playTone(freq) {
+      let osc = audioContext.createOscillator();
+      osc.connect(masterGainNode);
+  
+      let type = wavePicker.options[wavePicker.selectedIndex].value;
+  
+      if (type == "custom") {
+        osc.setPeriodicWave(customWaveform);
+      } else {
+        osc.type = type;
+      }
+  
+  
+      osc.frequency.value = freq;
+      osc.start();
+  
+      return osc;
+    }
+  
+    function changeVolume(event) {
+      masterGainNode.gain.value = volumeControl.value;
+    }
+  
+    class Keyboard extends Component {
+  
+  
+      componentDidMount = () => {
+  
+        setup();
+  
+        $('document').keydown(event => {
+          if (cssKeyMap.hasOwnProperty(event.key)) {
+            $(`#${event.key}`).addClass(cssKeyMap[event.key])
+          } else {
+            console.log('wtf?');
+          }
+        });
+  
+        $(document).keyup(event => {
+          if (keyMap.hasOwnProperty(event.key)) {
+            $(`#${event.key}`).removeClass(cssKeyMap[event.key])
+  
+          }
+        });
+      }
+  
+      render() {
         mode = this.props.mode;
         if (mode === 'record') {
-            mode = 'startRecording';
+          recording = [];
         } else if (mode === 'play') {
-            playback();
+          playback();
         }
-
-        return (
-            <div>
-                <div className="container">
-                    <div className="blackBox"></div>
-                    <div class="powerMode" id="m"> Hit 'm' for Power Mode</div>
-
-                    <div id="keyboard">
-                        <div className="key keyboard-normal" id="a">
-                            <p className="blackLetter place">a</p>
-                            <p className="whiteNote place">C</p>
-                        </div>
-
-                        <div className="powerBox" id="powerBox"></div>
-
-                        <div className="key keyboard-accidental" id="w">
-                            <p className="whiteLetter place">w</p>
-                            <p className="blackNote place">C#</p>
-                        </div>
-
-                        <div className="key keyboard-normal" id="s">
-                            <p className="blackLetter place">s</p>
-                            <p className="whiteNote place">D</p>
-                        </div>
-
-                        <div className="key keyboard-accidental" id="e">
-                            <p className="whiteLetter place">e</p>
-                            <p className="blackNote place">D#</p>
-                        </div>
-
-                        <div className="key keyboard-normal" id="d">
-                            <p className="blackLetter place">d</p>
-                            <p className="whiteNote place">E</p>
-                        </div>
-
-                        <div className="key keyboard-normal" id="f">
-                            <p className="blackLetter place">f</p>
-                            <p className="whiteNote place">F</p>
-                        </div>
-
-                        <div className="key keyboard-accidental" id="t">
-                            <p className="whiteLetter place">t</p>
-                            <p className="blackNote place">F#</p>
-                        </div>
-
-                        <div className="key keyboard-normal" id="g">
-                            <p className="blackLetter place">g</p>
-                            <p className="whiteNote place">G</p>
-                        </div>
-
-                        <div className="key keyboard-accidental" id="y">
-                            <p className="whiteLetter place">y</p>
-                            <p className="blackNote place">G#</p>
-                        </div>
-
-                        <div className="key keyboard-normal" id="h">
-                            <p className="blackLetter place">h</p>
-                            <p className="whiteNote place">A</p>
-                        </div>
-
-                        <div className="key keyboard-accidental" id="u">
-                            <p className="whiteLetter place">u</p>
-                            <p className="blackNote place">A#</p>
-                        </div>
-
-                        <div className="key keyboard-normal" id="j">
-                            <p className="blackLetter place">j</p>
-                            <p className="whiteNote place">B</p>
-                        </div>
-                        <div className="octave" id="octave">
-                            z= octave down <br />
-                            x=octave up
-                        </div>
-                    </div>
-
-                </div>
-
-                <div className="settingsBar">
-                    <div className="left">
-                        <span style={{ color: 'white' }}>Volume: </span>
-                        <input
-                            type="range"
-                            min="0.0"
-                            max="1.0"
-                            step="0.01"
-                            value="0.5"
-                            list="volumes"
-                            name="volume"
-                        />
-                        <datalist id="volumes">
-                            <option value="0.0" label="Mute"> </option>
-                            <option value="1.0" label="100%"> </option>
-                        </datalist>
-                    </div>
-                    <div className="right">
-                        <span style={{ color: 'white' }}>Current waveform: </span>
-                        <select name="waveform">
-                            <option value="sine">Sine</option>
-                            <option value="square" selected>Square</option>
-                            <option value="sawtooth">Sawtooth</option>
-                            <option value="triangle">Triangle</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+  
+        return ( <
+          div >
+          <
+          div className = "container" >
+          <
+          div className = "blackBox" > < /div> <
+          div class = "powerMode"
+          id = "m" > Hit 'm'
+          for Power Mode < /div>
+  
+          <
+          div id = "keyboard" >
+          <
+          div className = "key keyboard-normal"
+          id = "a" >
+          <
+          p className = "blackLetter place" > a < /p> <
+          p className = "whiteNote place" > C < /p> <
+          /div>
+  
+  
+          <
+          div className = "key keyboard-accidental"
+          id = "w" >
+          <
+          p className = "whiteLetter place" > w < /p> <
+          p className = "blackNote place" > C# < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-normal"
+          id = "s" >
+          <
+          p className = "blackLetter place" > s < /p> <
+          p className = "whiteNote place" > D < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-accidental"
+          id = "e" >
+          <
+          p className = "whiteLetter place" > e < /p> <
+          p className = "blackNote place" > D# < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-normal"
+          id = "d" >
+          <
+          p className = "blackLetter place" > d < /p> <
+          p className = "whiteNote place" > E < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-normal"
+          id = "f" >
+          <
+          p className = "blackLetter place" > f < /p> <
+          p className = "whiteNote place" > F < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-accidental"
+          id = "t" >
+          <
+          p className = "whiteLetter place" > t < /p> <
+          p className = "blackNote place" > F# < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-normal"
+          id = "g" >
+          <
+          p className = "blackLetter place" > g < /p> <
+          p className = "whiteNote place" > G < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-accidental"
+          id = "y" >
+          <
+          p className = "whiteLetter place" > y < /p> <
+          p className = "blackNote place" > G# < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-normal"
+          id = "h" >
+          <
+          p className = "blackLetter place" > h < /p> <
+          p className = "whiteNote place" > A < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-accidental"
+          id = "u" >
+          <
+          p className = "whiteLetter place" > u < /p> <
+          p className = "blackNote place" > A# < /p> <
+          /div>
+  
+          <
+          div className = "key keyboard-normal"
+          id = "j" >
+          <
+          p className = "blackLetter place" > j < /p> <
+          p className = "whiteNote place" > B < /p> <
+          /div> <
+          div className = "octave"
+          id = "octave" >
+          z = octave down < br / >
+          x = octave up <
+          /div> <
+          /div>
+  
+          <
+          /div>
+  
+          <
+          div className = "settingsBar" >
+          <
+          div className = "left" >
+          <
+          span style = {
+            {
+              color: 'white'
+            }
+          } > Volume: < /span> <
+          input type = "range"
+          min = "0.0"
+          max = "1.0"
+          step = "0.01"
+          value = "0.5"
+          list = "volumes"
+          name = "volume" /
+          >
+          <
+          datalist id = "volumes" >
+          <
+          option value = "0.0"
+          label = "Mute" > < /option> <
+          option value = "1.0"
+          label = "100%" > < /option> <
+          /datalist> <
+          /div> <
+          div className = "right" >
+          <
+          span style = {
+            {
+              color: 'white'
+            }
+          } > Current waveform: < /span> <
+          select name = "waveform" >
+          <
+          option value = "sine" > Sine < /option> <
+          option value = "square"
+          selected > Square < /option> <
+          option value = "sawtooth" > Sawtooth < /option> <
+          option value = "triangle" > Triangle < /option> <
+          option value = "custom" > Custom < /option> <
+          /select> <
+          /div> <
+          /div> <
+          /div>
         );
+      }
     }
-}
-
-export default Keyboard;
+  
+    export default Keyboard;
+  
