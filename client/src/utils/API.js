@@ -10,6 +10,10 @@ export default {
     saveUser: function(user) {
         console.log('user', user);
         return axios.post("/api/users/register", user);
+    },
+    signInUser: function(user) {
+        console.log('user', user);
+        return axios.post("/api/users/signin", user);
     }
 }
 

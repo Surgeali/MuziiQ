@@ -5,5 +5,9 @@ const usersController = require("../../controllers/usersControllers")
 router.route("/register")
     .post(usersController.create);
 
+router.route("/signin")
+    .post(usersController.findOne);
+    
+
 
 module.exports = router;
