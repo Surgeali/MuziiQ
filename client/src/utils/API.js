@@ -9,7 +9,7 @@ export default {
     //Save user to database
     saveUser: function(user) {
         console.log('user', user);
-        return axios.post("/api/users", user);
+        return axios.post("/api/users/register", user);
     }
 }
 

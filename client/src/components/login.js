@@ -37,9 +37,13 @@ class Login extends Component {
             password: this.state.password
         }
         API.saveUser(newUser)
-            .then(res => this.setState({
-                users: res.data
-            }))
+            .then(res => {
+                // console.log(res.data);
+                this.setState({
+                    users: res.data
+                });
+                this.props.history.push('/keyboard');
+        })
             .catch(err => console.log(err));
     }
 
