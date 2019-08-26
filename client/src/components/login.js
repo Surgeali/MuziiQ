@@ -9,18 +9,42 @@ class Login extends Component {
         password: ''
     }
     componentDidMount() {
+        // this.loadUsers();
+        console.log('component mounted');
+    }
+
+    handleInputChange = event => {
+        // handles user's input in the input fields
+        // updates state
+        // console.log(event);;
+        const { name, value } = event.target;
+        // console.log(name, value);
+        this.setState({
+            [name]: value
+        });
+        // console.log("STATE", this.state)
+    }
+
+    handleFormSubmit = event => {
+        // handles click event by calling loadUsers
+        event.preventDefault();
         this.loadUsers();
     }
-    
+
     loadUsers = () => {
         const newUser = {
             username: this.state.username,
             password: this.state.password
         }
         API.saveUser(newUser)
-        .then(res => this.setState({ users: res.data
-        }))
-        .catch(err => console.log(err));
+            .then(res => {
+                // console.log(res.data);
+                this.setState({
+                    users: res.data
+                });
+                this.props.history.push('/keyboard');
+        })
+            .catch(err => console.log(err));
     }
 
     render() {
@@ -37,20 +61,23 @@ class Login extends Component {
                                     <div className="input-group-prepend">
                                         <span className="input-group-text"><i className="fas fa-user"></i></span>
                                     </div>
-                                    <input type="text" className="form-control" placeholder="username" />
+                                    <input type="text" className="form-control" name="username" value={this.state.username}
+                                        onChange={this.handleInputChange} placeholder="username" />
                                 </div>
                                 <div className="input-group form-group">
                                     <div className="input-group-prepend">
                                         <span className="input-group-text"><i className="fas fa-key"></i></span>
                                     </div>
-                                    <input type="password" className="form-control" placeholder="password" />
+                                    <input type="password" className="form-control" placeholder="password"
+                                        name="password" value={this.state.password}
+                                        onChange={this.handleInputChange} />
                                 </div>
-                                    <div className="row align-items-center remember">
-                                        <input type="checkbox" />Remember Me
+                                <div className="row align-items-center remember">
+                                    <input type="checkbox" />Remember Me
                                     </div>
-                                    <div className="form-group">
-                                        <input type="submit" value="Login" className="btn float-right login_btn" />
-                                    </div>                                                     
+                                <div className="form-group">
+                                    <button type="submit" className="btn float-right login_btn" onClick={this.handleFormSubmit}>Login</button>
+                                </div>
                             </form>
                         </div>
                         <div className="card-footer">

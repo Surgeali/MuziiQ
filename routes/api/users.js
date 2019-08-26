@@ -1,6 +1,9 @@
 const router = require("express").Router();
-const usersController = require("../../controllers/usersController");
+const usersController = require("../../controllers/usersControllers")
 
 // matches with "/api/users"
-router.route("/")
+router.route("/register")
     .post(usersController.create);
+
+
+module.exports = router;
