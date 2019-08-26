@@ -6,7 +6,8 @@ class Login extends Component {
 
     state = {
         username: '',
-        password: ''
+        password: '',
+        haveAccount: false
     }
     componentDidMount() {
         // this.loadUsers();
@@ -14,46 +15,86 @@ class Login extends Component {
     }
 
     handleInputChange = event => {
-        // handles user's input in the input fields
-        // updates state
-        // console.log(event);;
+      console.log(event.target);
         const { name, value } = event.target;
-        // console.log(name, value);
+        console.log(name, value)
         this.setState({
             [name]: value
         });
-        // console.log("STATE", this.state)
+
+        console.log("STATE", this.state)
     }
 
-    handleFormSubmit = event => {
+    handleRegisterSubmit = event => {
         // handles click event by calling loadUsers
         event.preventDefault();
-        this.loadUsers();
+        this.registerUser();
     }
 
-    loadUsers = () => {
-        const newUser = {
+    handleSignInSubmit = event => {
+        event.preventDefault();
+        this.verifyUser();
+    }
+
+    registerUser = () => {
+        const userData = {
             username: this.state.username,
             password: this.state.password
+        };
+            
+            API.saveUser(userData)
+                .then(res => {
+                    // console.log(res.data);
+                    this.setState({
+                        users: res.data
+                    });
+                    this.props.history.push('/keyboard');
+                })
+                .catch(err => console.log(err));
+
         }
-        API.saveUser(newUser)
+
+    verifyUser = () => {
+        const userData = {
+            username: this.state.username,
+            password: this.state.password
+        };
+        API.signInUser(userData)
             .then(res => {
                 // console.log(res.data);
                 this.setState({
                     users: res.data
                 });
                 this.props.history.push('/keyboard');
-        })
+            })
             .catch(err => console.log(err));
     }
 
+    // handleSignIn = () => {
+    //     console.log("STATE BEFORE", this.state)
+    //     this.setState({haveAccount: true})
+    //     console.log("STATE AFTER", this.state)
+    // }
+
+    // handleRegister = () => {
+    //     console.log("STATE BEFORE", this.state)
+    //     this.setState({haveAccount: false})
+    //     console.log("STATE AFTER", this.state)
+    // }
+
     render() {
+       
         return (
             <div className="container">
                 <div className="d-flex justify-content-center h-100">
                     <div className="card">
                         <div className="card-header">
+                            {!this.state.haveAccount ? 
+                            <h3>Create Account</h3> 
+                            :
                             <h3>Sign In</h3>
+                            }
+                              
                         </div>
                         <div className="card-body">
                             <form>
@@ -76,14 +117,24 @@ class Login extends Component {
                                     <input type="checkbox" />Remember Me
                                     </div>
                                 <div className="form-group">
-                                    <button type="submit" className="btn float-right login_btn" onClick={this.handleFormSubmit}>Login</button>
+                                {!this.state.haveAccount ? 
+                                    <button type="submit" className="btn float-right login_btn" onClick={this.handleRegisterSubmit}>Register</button>
+                                    :
+                                    <button type="submit" className="btn float-right login_btn" onClick={this.handleSignInSubmit}>Sign In</button>
+                                }
                                 </div>
                             </form>
                         </div>
                         <div className="card-footer">
+                        {!this.state.haveAccount ? 
                             <div className="d-flex justify-content-center links">
-                                Don't have an account?<a href="#">Sign Up</a>
+                                Already have an account?<a href='#' value={this.state.haveAccount} name='haveAccount' onClick={this.handleInputChange}>Sign In</a>
                             </div>
+                            :
+                            <div className="d-flex justify-content-center links">
+                                Don't have an account?<a href='#' value={this.state.haveAccount} name='haveAccount' onClick={this.handleInputChange}>Register!</a>
+                            </div>
+                        }
                         </div>
                     </div>
                 </div>
@@ -91,4 +142,5 @@ class Login extends Component {
         );
     }
 }
+
 export default Login;
